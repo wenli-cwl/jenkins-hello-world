@@ -56,7 +56,7 @@ pipeline {
     }
     post {
         success {
-            mail to: 'team@example.com', subject: 'Build and Deploy Successful', body: 'The deployment to IIS has finished.'
+            mail to: 'wenli.choong@isatec.com', subject: 'Build and Deploy Successful', body: 'The deployment to IIS has finished.'
         }
     }
 }

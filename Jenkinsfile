@@ -9,14 +9,14 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    sh 'mkdir -p $BUILD_DIR'
-                    sh 'cp index.html $BUILD_DIR/'
+                    bat 'mkdir -p $BUILD_DIR'
+                    bat 'cp index.html $BUILD_DIR/'
                 }
             }
         }
         stage('Test') {
             steps {
-                sh 'echo "<testsuite><testcase classname=\"hello\" name=\"world\"/></testsuite>" > test-results.xml'
+                bat 'echo "<testsuite><testcase classname=\"hello\" name=\"world\"/></testsuite>" > test-results.xml'
                 junit 'test-results.xml'
             }
         }
@@ -50,7 +50,7 @@ pipeline {
         }
         stage('Publish') {
             steps {
-                sh 'echo "Publishing to GitHub Packages using token $GITHUB_TOKEN"'
+                bat 'echo "Publishing to GitHub Packages using token $GITHUB_TOKEN"'
             }
         }
     }

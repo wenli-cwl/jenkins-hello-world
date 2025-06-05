@@ -1,11 +1,37 @@
 pipeline {
     agent any
+    parameters {
+        choice(name: 'DEPLOY_ENV', choices: ['dev', 'qa', 'uat', 'prod'], description: 'Deployment environment')
+    }
     environment {
         BUILD_DIR = 'build'
         PACKAGE_NAME = 'hello-world'
         GITHUB_TOKEN = credentials('github-token')
     }
     stages {
+        stage('Setup Environment') {
+            steps {
+                script {
+                    switch (params.DEPLOY_ENV) {
+                        case 'dev':
+                            env.DEPLOY_PORT = '9091'
+                            env.SITE_NAME = 'HelloWorldSite-Dev'
+                            break
+                        case 'qa':
+                            env.DEPLOY_PORT = '9092'
+                            env.SITE_NAME = 'HelloWorldSite-QA'
+                            break
+                        case 'uat':
+                            env.DEPLOY_PORT = '9093'
+                            env.SITE_NAME = 'HelloWorldSite-UAT'
+                            break
+                        default:
+                            env.DEPLOY_PORT = '9094'
+                            env.SITE_NAME = 'HelloWorldSite'
+                    }
+                }
+            }
+        }
         stage('Build') {
             steps {
                 script {
@@ -27,7 +53,10 @@ pipeline {
         }
         stage('Approval') {
             steps {
-                input message: 'Approve deployment to IIS on port 9091?'
+                script {
+                    def msg = "Approve deployment to ${params.DEPLOY_ENV} on port ${env.DEPLOY_PORT}?"
+                    input message: msg
+                }
             }
         }
         stage('Deploy') {
@@ -36,10 +65,10 @@ pipeline {
                     bat '''
                     powershell -NoProfile -Command "
                         Import-Module WebAdministration;
-                        $siteName = 'HelloWorldSite';
+                        $siteName = env:SITE_NAME;
                         $physicalPath = env:WORKSPACE + '\\' + env:BUILD_DIR;
                         if (-not (Get-Website -Name $siteName -ErrorAction SilentlyContinue)) {
-                            New-Website -Name $siteName -Port 9091 -PhysicalPath $physicalPath -Force;
+                            New-Website -Name $siteName -Port $env:DEPLOY_PORT -PhysicalPath $physicalPath -Force;
                         } else {
                             Set-ItemProperty IIS:\\Sites\\$siteName -Name physicalPath -Value $physicalPath;
                         }

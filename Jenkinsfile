@@ -14,20 +14,20 @@ pipeline {
                 script {
                     switch (params.DEPLOY_ENV) {
                         case 'dev':
-                            env.DEPLOY_PORT = '9091'
-                            env.SITE_NAME = 'HelloWorldSite-Dev'
+                            env.DEPLOY_PORT = env.DEV_DEPLOY_PORT
+                            env.SITE_NAME = env.DEV_SITE_NAME
                             break
                         case 'qa':
-                            env.DEPLOY_PORT = '9092'
-                            env.SITE_NAME = 'HelloWorldSite-QA'
+                            env.DEPLOY_PORT = env.QA_DEPLOY_PORT
+                            env.SITE_NAME = env.QA_SITE_NAME
                             break
                         case 'uat':
-                            env.DEPLOY_PORT = '9093'
-                            env.SITE_NAME = 'HelloWorldSite-UAT'
+                            env.DEPLOY_PORT = env.UAT_DEPLOY_PORT
+                            env.SITE_NAME = env.UAT_SITE_NAME
                             break
                         default:
-                            env.DEPLOY_PORT = '9094'
-                            env.SITE_NAME = 'HelloWorldSite'
+                            env.DEPLOY_PORT = env.PROD_DEPLOY_PORT
+                            env.SITE_NAME = env.PROD_SITE_NAME
                     }
                 }
             }
